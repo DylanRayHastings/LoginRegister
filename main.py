@@ -9,7 +9,6 @@ from tkinter import PhotoImage  # IMAGES
 import sqlite3  # DATABASE CONNECTIVITY
 import webbrowser  # WEB CONNECTIVITY
 import subprocess  # SUBPROCESS
-from PIL import Image  # IMAGE PROCESSING
 import time  # TIME
 import bcrypt
 import logging
