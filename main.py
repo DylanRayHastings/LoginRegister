@@ -1,6 +1,3 @@
-# Make Top Bar at the top of the application 
-# WRITE ALL CODE IN PYTHON TERMINAL
-
 # BUG : TOP BAR IS AT THE BOTTOM OF THE APPLICATION
 import tkinter as tk  #  MODULES FOR GUI
 import tkinter.ttk as ttk
