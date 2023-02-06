@@ -1,4 +1,7 @@
-# BUG : There is no check to prevent a user from logging in with an empty username or password field.
+# Make Top Bar at the top of the application 
+# WRITE ALL CODE IN PYTHON TERMINAL
+
+# BUG : TOP BAR IS AT THE BOTTOM OF THE APPLICATION
 import tkinter as tk  #  MODULES FOR GUI
 import tkinter.ttk as ttk
 from tkinter import messagebox  # MESSAGE BOXES
@@ -15,6 +18,16 @@ logging.basicConfig(
     filename="app.log", level=logging.DEBUG, format="%(asctime)s %(message)s"
 )
 
+class TopBar:
+    def __init__(self, master, title):
+        self.master = master
+        self.title = title
+        
+        self.top_bar = tk.Frame(self.master)
+        self.top_bar.pack(side="right")
+                        
+        self.close_button = ttk.Button(self.top_bar, text="Exit", command=self.master.quit)
+        self.close_button.pack(side="right")
 
 class MainApplication(tk.Tk):
     """
@@ -248,22 +261,9 @@ class RegisterScreen(tk.Frame):
         self.password_entry.delete(0, tk.END)
         self.password_entry.insert(0, "Password")
 
-
-class CloseButton(tk.Button):
-    def __init__(self, parent, *args, **kwargs):
-        tk.Button.__init__(self, parent, *args, **kwargs)
-        self.config(text="Close", command=self.quit)
-
-
-class HomeScreen(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
-        CloseButton(self).pack(side="right", padx=10)
-        self.label = tk.Label(self, text="Welcome to the home screen")
-        self.label.pack(pady=10)
-
 app = MainApplication()
-# app.overrideredirect(True)
+app.overrideredirect(True)
 app.show_frame(LoginScreen)
+top_bar = TopBar(app, '')
 app.title("Login | 3D Game")
 app.mainloop()
