@@ -1,18 +1,22 @@
-# TODO : Make the complete application look modern and clean.
-# TODO : Add proper error handling and validation to ensure that the input entered by the user is valid.
+# ATTEMPT TO FIX TODO AND BUG LISTED BELOW
 # TODO : Use Python's logging module to log messages and events that occur during the runtime of the application.
-# TODO : Refactor the code to make it more readable and understandable by adding comments and meaningful variable names.
-# TODO : Use Python's built-in libraries like subprocess and webbrowser sparingly and only when necessary.
 # TODO : Use Python's with statement when working with databases to ensure that the database connection is properly closed after use.
-# TODO : Make the button in RegisterScreen() class the same in LoginScreen() class.
-# TODO : Test the code thoroughly to ensure that all functionalities work as intended.
-# TODO : Pressing Enter in the Register Screen will register the user.
+# TODO : Use Python's try and except blocks to handle exceptions and ensure that the inputs are valid.
+# TODO : Use Python's logging module to log messages and events that occur during the runtime of the application. This will help you in debugging the code in case of any issues.
+# TODO : Refactor the code to make it more readable and understandable. You can add comments, meaningful variable names, and use proper indentation to make the code look cleaner and more organized.
+# TODO : Use built-in libraries like subprocess and webbrowser only when necessary.
+# TODO : Use the with statement when working with databases to ensure that the database connection is properly closed after use.
+# TODO : Make the buttons in the RegisterScreen class the same as in the LoginScreen class.
+# TODO : Use the log messages that you created using the logging module.
 
 
-# BUG : Title of the application should change from Login | Pong on the Login Screen and change to Register on the Register Screen.
-# BUG : Buttons from Login Screen and Register Screen are slightly off-positioned.
-# BUG : Registration is not working at all.
-# BUG : Loging is not displaying an error message if the user is not registered.
+# BUG : Traceback (most recent call last):
+#   File "c:\Users\Dylan\Desktop\Dylans Shit\Coding\Python\registerLoginTestingV2.py", line 128, in login
+#     logging.debug(f"Fetched password hash: {stored_hash}")
+#                                             ^^^^^^^^^^^
+# UnboundLocalError: cannot access local variable 'stored_hash' where it is not associated with a value
+
+
 import tkinter as tk  #  MODULES FOR GUI
 import tkinter.ttk as ttk
 from tkinter import messagebox  # MESSAGE BOXES
@@ -105,26 +109,38 @@ class LoginScreen(tk.Frame):
         register_button.grid(row=2, column=0, padx=5, pady=10, sticky="e")
 
     def login(self):
+        logging.debug("Starting the login process")
         self.username = self.username_entry.get()
         self.password = self.password_entry.get()
 
-        # Use bcrypt to hash the password before storing in the database
-        hashed_password = bcrypt.hashpw(self.password.encode("utf-8"), bcrypt.gensalt())
+        try:
+            logging.debug("Connected to the database")
+            conn = sqlite3.connect("user_information.db")
+            cursor = conn.cursor()
 
-        conn = sqlite3.connect("user_information.db")
-        c = conn.cursor()
-        c.execute(
-            "SELECT * FROM users WHERE username=? AND password=?",
-            (self.username, hashed_password),
-        )
-        user = c.fetchone()
-        conn.close()
+            query = "SELECT password FROM users WHERE username = ?"
+            cursor.execute(query, (self.username,))
+            row = cursor.fetchone()
+            if row:
+                stored_hash = row[0]
+            else:
+                logging.debug("No rows returned from the query")
+            logging.debug(f"Fetched password hash: {stored_hash}")
 
-        if user:
-            print("Successful login")
-        else:
-            print("Incorrect username or password")
-
+            if stored_hash and bcrypt.checkpw(self.password.encode(), stored_hash[0]):
+                logging.debug(f"Provided password matches stored password: {bcrypt.checkpw(self.password.encode(), stored_hash)}")
+                messagebox.showinfo("Login", "Login Successful")
+                self.controller.show_frame(HomeScreen)
+            else:
+                messagebox.showerror("Login", "Incorrect username or password")
+                logging.debug(f"Login failed for {self.username}")
+        except Exception as e:
+            logging.exception(e)
+            messagebox.showerror("Login", "Login failed")
+        finally:
+            conn.close()
+            logging.debug("Connection to the database closed")
+    
     def clear_username(self, event):
         if self.username_entry.get() == "Username":
             self.username_entry.delete(0, tk.END)
@@ -196,6 +212,7 @@ class RegisterScreen(tk.Frame):
         back_button.grid(row=2, column=0, padx=10, pady=10, sticky="e")
 
         self.winfo_toplevel().title("Register")
+        
 
     def clear_username(self, event):
         if self.username_entry.get() == "Username":
@@ -228,11 +245,16 @@ class RegisterScreen(tk.Frame):
 
         conn = sqlite3.connect("user_information.db")
         c = conn.cursor()
-        c.execute(
-            "INSERT INTO users (username, password) VALUES (?, ?)",
-            (self.username, hashed_password),
-        )
-        conn.commit()
+        c.execute("SELECT * FROM users WHERE username=?", (self.username,))
+        result = c.fetchone()
+        if result is not None:
+            messagebox.showerror("Error", "Username already exists.")
+            logging.debug("Register Failed: Username already exists.")
+        else:
+            c.execute("INSERT INTO users VALUES (?,?)", (self.username, hashed_password))
+            conn.commit()
+            messagebox.showinfo("Success", "User registered successfully.")
+            logging.debug("Register Success: User registered successfully.")
         conn.close()
 
     def on_raise(self):
