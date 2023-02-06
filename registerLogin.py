@@ -1,21 +1,8 @@
-# ATTEMPT TO FIX TODO AND BUG LISTED BELOW
-# TODO : Use Python's logging module to log messages and events that occur during the runtime of the application.
-# TODO : Use Python's with statement when working with databases to ensure that the database connection is properly closed after use.
-# TODO : Use Python's try and except blocks to handle exceptions and ensure that the inputs are valid.
-# TODO : Use Python's logging module to log messages and events that occur during the runtime of the application. This will help you in debugging the code in case of any issues.
-# TODO : Refactor the code to make it more readable and understandable. You can add comments, meaningful variable names, and use proper indentation to make the code look cleaner and more organized.
-# TODO : Use built-in libraries like subprocess and webbrowser only when necessary.
-# TODO : Use the with statement when working with databases to ensure that the database connection is properly closed after use.
-# TODO : Make the buttons in the RegisterScreen class the same as in the LoginScreen class.
-# TODO : Use the log messages that you created using the logging module.
-
-
-# BUG : Traceback (most recent call last):
-#   File "c:\Users\Dylan\Desktop\Dylans Shit\Coding\Python\registerLoginTestingV2.py", line 128, in login
-#     logging.debug(f"Fetched password hash: {stored_hash}")
-#                                             ^^^^^^^^^^^
-# UnboundLocalError: cannot access local variable 'stored_hash' where it is not associated with a value
-
+# There is no check to prevent a user from logging in with an empty username or password field.
+# The password hash is stored in plain text in the database. This is a security issue as the passwords can be easily retrieved in case of a data breach.
+# There is no password confirmation field during registration, so there's no way to confirm that the user has entered the correct password.
+# The query to retrieve the password from the database is vulnerable to SQL injection attacks.
+# There is no error handling for the database connection, so the code may crash if there is a problem connecting to the database.
 
 import tkinter as tk  #  MODULES FOR GUI
 import tkinter.ttk as ttk
@@ -29,7 +16,6 @@ import time  # TIME
 import bcrypt
 import logging
 
-# Configuring logging for the app
 logging.basicConfig(
     filename="app.log", level=logging.DEBUG, format="%(asctime)s %(message)s"
 )
@@ -112,28 +98,32 @@ class LoginScreen(tk.Frame):
         logging.debug("Starting the login process")
         self.username = self.username_entry.get()
         self.password = self.password_entry.get()
+        
 
         try:
             logging.debug("Connected to the database")
-            conn = sqlite3.connect("user_information.db")
-            cursor = conn.cursor()
+            with sqlite3.connect("user_information.db") as conn:
+                cursor = conn.cursor()
+                query = "SELECT password FROM users WHERE username = ?"
+                cursor.execute(query, (self.username,))
+                row = cursor.fetchone()
 
-            query = "SELECT password FROM users WHERE username = ?"
-            cursor.execute(query, (self.username,))
-            row = cursor.fetchone()
             if row:
                 stored_hash = row[0]
-            else:
-                logging.debug("No rows returned from the query")
-            logging.debug(f"Fetched password hash: {stored_hash}")
+            else: 
+                messagebox.showerror("Error", "Username not found")
+                return
 
-            if stored_hash and bcrypt.checkpw(self.password.encode(), stored_hash[0]):
+            if stored_hash and bcrypt.checkpw(self.password.encode(), stored_hash):
                 logging.debug(f"Provided password matches stored password: {bcrypt.checkpw(self.password.encode(), stored_hash)}")
+                logging.debug(f"Login successful for {self.username}")
                 messagebox.showinfo("Login", "Login Successful")
-                self.controller.show_frame(HomeScreen)
+                subprocess.call(["python", "3D.py"])
+                
             else:
                 messagebox.showerror("Login", "Incorrect username or password")
                 logging.debug(f"Login failed for {self.username}")
+                
         except Exception as e:
             logging.exception(e)
             messagebox.showerror("Login", "Login failed")
@@ -277,11 +267,8 @@ class HomeScreen(tk.Frame):
         self.label = tk.Label(self, text="Welcome to the home screen")
         self.label.pack(pady=10)
 
-
 app = MainApplication()
 # app.overrideredirect(True)
 app.show_frame(LoginScreen)
-
-app.title("Login | Pong")
-
+app.title("Login | 3D Game")
 app.mainloop()
