@@ -1,9 +1,4 @@
-# There is no check to prevent a user from logging in with an empty username or password field.
-# The password hash is stored in plain text in the database. This is a security issue as the passwords can be easily retrieved in case of a data breach.
-# There is no password confirmation field during registration, so there's no way to confirm that the user has entered the correct password.
-# The query to retrieve the password from the database is vulnerable to SQL injection attacks.
-# There is no error handling for the database connection, so the code may crash if there is a problem connecting to the database.
-
+# BUG : There is no check to prevent a user from logging in with an empty username or password field.
 import tkinter as tk  #  MODULES FOR GUI
 import tkinter.ttk as ttk
 from tkinter import messagebox  # MESSAGE BOXES
