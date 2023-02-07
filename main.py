@@ -1,5 +1,3 @@
-# BUG : CANNOT CLICK OFF OF APP
-
 import tkinter as tk  #  MODULES FOR GUI
 import tkinter.ttk as ttk
 from tkinter import * 
@@ -26,7 +24,7 @@ class TopBar(tk.Frame):
         self.right_frame.pack(side="right")
 
         exit_icon = PhotoImage(file="X.png", width=30, height=30)
-        self.exit_button = tk.Button(self.right_frame, image=exit_icon, command=self.master.on_closing)
+        self.exit_button = tk.Button(self.right_frame, image=exit_icon, command=self.master)
         self.exit_button.grid(row=1, column=2)
         self.exit_icon = exit_icon
 
@@ -70,16 +68,9 @@ class MainApplication(tk.Tk):
 
         self.show_frame(LoginScreen)
 
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
-
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
-
-    def on_closing(self):
-        logging.debug("Application window closed")
-        self.withdraw()
-        self.app.bind("<Unmap>", self)
 
 class LoginScreen(tk.Frame):
     """
@@ -229,7 +220,7 @@ class RegisterScreen(tk.Frame):
         )
         back_button.grid(row=2, column=0, padx=10, pady=10, sticky="e")
 
-        self.winfo_toplevel().title("Register")
+        self.winfo_toplevel().title("Login | Register")
         
 
     def clear_username(self, event):
@@ -283,7 +274,7 @@ class RegisterScreen(tk.Frame):
 
 app = MainApplication()
 app.configure(background="#212121")
-app.overrideredirect(True)
+#app.overrideredirect(True)
 app.show_frame(LoginScreen)
 top_bar = TopBar(app, '')
 app.mainloop()
