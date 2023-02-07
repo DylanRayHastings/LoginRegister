@@ -1,29 +1,37 @@
-# BUG : TOP BAR IS AT THE BOTTOM OF THE APPLICATION
+# BUG : CANNOT CLICK OFF OF APP
+
 import tkinter as tk  #  MODULES FOR GUI
 import tkinter.ttk as ttk
-from tkinter import messagebox  # MESSAGE BOXES
-from tkinter import PhotoImage  # IMAGES
+from tkinter import * 
+from tkinter import messagebox
 import sqlite3  # DATABASE CONNECTIVITY
 import webbrowser  # WEB CONNECTIVITY
 import subprocess  # SUBPROCESS
 import time  # TIME
-import bcrypt
-import logging
+import bcrypt # ENCRYPTION
+import logging # LOGGING USER 
 
 logging.basicConfig(
     filename="app.log", level=logging.DEBUG, format="%(asctime)s %(message)s"
 )
 
-class TopBar:
-    def __init__(self, master, title):
-        self.master = master
-        self.title = title
-        
-        self.top_bar = tk.Frame(self.master)
-        self.top_bar.pack(side="right")
-                        
-        self.close_button = ttk.Button(self.top_bar, text="Exit", command=self.master.quit)
-        self.close_button.pack(side="right")
+class TopBar(tk.Frame):
+    def __init__(self, master, *args, **kwargs):
+        tk.Frame.__init__(self, master, *args, **kwargs)
+
+        self.left_frame = tk.Frame(self, background="#212121")
+        self.left_frame.pack(side="left")
+
+        self.right_frame = tk.Frame(self, background="#212121")
+        self.right_frame.pack(side="right")
+
+        exit_icon = PhotoImage(file="X.png", width=30, height=30)
+        self.exit_button = tk.Button(self.right_frame, image=exit_icon, command=self.master.on_closing)
+        self.exit_button.grid(row=1, column=2)
+        self.exit_icon = exit_icon
+
+    def pack(self, *args, **kwargs):
+        tk.Frame.pack(self, *args, **kwargs)
 
 class MainApplication(tk.Tk):
     """
@@ -40,10 +48,21 @@ class MainApplication(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand=True)
+        container = tk.Frame(self, background="#212121")
+        container.pack(fill="both", expand=True)
+        self.top_bar = TopBar(self, background="#212121")
+        self.top_bar.pack(side="top")
 
+        width = 350
+        height = 150
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x_coord = (screen_width/2) - (width/2)
+        y_coord = (screen_height/2) - (height/2)
+        self.geometry("{}x{}+{}+{}".format(width, height, int(x_coord), int(y_coord)))
+        self.resizable(width=False, height=False)
         self.frames = {}
+
         for F in (LoginScreen, RegisterScreen):
             frame = F(container, self)
             self.frames[F] = frame
@@ -51,10 +70,16 @@ class MainApplication(tk.Tk):
 
         self.show_frame(LoginScreen)
 
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
 
+    def on_closing(self):
+        logging.debug("Application window closed")
+        self.withdraw()
+        self.app.bind("<Unmap>", self)
 
 class LoginScreen(tk.Frame):
     """
@@ -74,17 +99,16 @@ class LoginScreen(tk.Frame):
     """
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, background="#212121")
         self.controller = controller
         self.font = ("Courier", 20)
 
-        self.username_entry = ttk.Entry(self, font=self.font)
+        self.username_entry = ttk.Entry(self, font=self.font, background="#20C20E")
         self.username_entry.insert(0, "Username")
         self.username_entry.bind("<FocusIn>", self.clear_username)
         self.username_entry.grid(row=0, column=0, padx=10, pady=10)
 
-        self.password_entry = ttk.Entry(self, font=self.font, show="*")
+        self.password_entry = ttk.Entry(self, font=self.font, show="*", background="#20C20E")
         self.password_entry.insert(0, "Password")
         self.password_entry.bind("<FocusIn>", self.clear_password)
         self.password_entry.grid(row=1, column=0, padx=10, pady=10)
@@ -188,12 +212,12 @@ class RegisterScreen(tk.Frame):
         self.controller = controller
         self.font = ("Courier", 20)
 
-        self.username_entry = ttk.Entry(self, font=self.font)
+        self.username_entry = ttk.Entry(self, font=self.font, background="#212121")
         self.username_entry.insert(0, "Username")
         self.username_entry.bind("<FocusIn>", self.clear_username)
         self.username_entry.grid(row=0, column=0, padx=10, pady=10)
 
-        self.password_entry = ttk.Entry(self, font=self.font, show="*")
+        self.password_entry = ttk.Entry(self, font=self.font, show="*", background="#212121")
         self.password_entry.insert(0, "Password")
         self.password_entry.bind("<FocusIn>", self.clear_password)
         self.password_entry.grid(row=1, column=0, padx=10, pady=10)
@@ -258,8 +282,8 @@ class RegisterScreen(tk.Frame):
         self.password_entry.insert(0, "Password")
 
 app = MainApplication()
+app.configure(background="#212121")
 app.overrideredirect(True)
 app.show_frame(LoginScreen)
 top_bar = TopBar(app, '')
-app.title("Login | 3D Game")
 app.mainloop()
