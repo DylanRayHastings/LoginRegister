@@ -1,15 +1,13 @@
-# BUG : CANNOT CLICK OFF OF APP
-
-import tkinter as tk  #  MODULES FOR GUI
+import tkinter as tk  
 import tkinter.ttk as ttk
 from tkinter import * 
 from tkinter import messagebox
-import sqlite3  # DATABASE CONNECTIVITY
-import webbrowser  # WEB CONNECTIVITY
-import subprocess  # SUBPROCESS
-import time  # TIME
-import bcrypt # ENCRYPTION
-import logging # LOGGING USER 
+import sqlite3  
+import webbrowser 
+import subprocess
+import time
+import bcrypt
+import logging 
 
 logging.basicConfig(
     filename='app.log', level=logging.DEBUG, format='%(asctime)s %(message)s'
