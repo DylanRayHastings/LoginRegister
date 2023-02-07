@@ -1,5 +1,6 @@
 import tkinter as tk  
 import tkinter.ttk as ttk
+import customtkinter
 from tkinter import * 
 from tkinter import messagebox
 import sqlite3  
@@ -9,28 +10,32 @@ import time
 import bcrypt
 import logging 
 
+customtkinter.set_appearance_mode("Dark")
 logging.basicConfig(
     filename='app.log', level=logging.DEBUG, format='%(asctime)s %(message)s'
 )
 
+#TRANSLATE INTO customtkinter
 class TopBar(tk.Frame):
     def __init__(self, master, *args, **kwargs):
         tk.Frame.__init__(self, master, *args, **kwargs)
 
-        self.left_frame = tk.Frame(self, background='#212121')
+        self.left_frame = customtkinter.CTkFrame(self, bg_color='#212121')
         self.left_frame.pack(side='left')
 
-        self.right_frame = tk.Frame(self, background='#212121')
+        self.right_frame = customtkinter.CTkFrame(self, bg_color='#212121')
         self.right_frame.pack(side='right')
 
         exit_icon = PhotoImage(file='X.png', width=30, height=30)
-        self.exit_button = tk.Button(self.right_frame, image=exit_icon, command=self.master)
+        self.exit_button = customtkinter.CTkButton(self.right_frame, image=exit_icon, command=self.master, fg_color='#212121')
+
         self.exit_button.grid(row=1, column=2)
         self.exit_icon = exit_icon
 
     def pack(self, *args, **kwargs):
         tk.Frame.pack(self, *args, **kwargs)
 
+#TRANSLATE INTO customtkinter
 class MainApplication(tk.Tk):
     '''
     The MainApplication class is a Tkinter GUI based application that acts as a container for the login and register screens.
@@ -72,6 +77,7 @@ class MainApplication(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
+# change the code to a modern GUI using the module 'customtkinter'
 class LoginScreen(tk.Frame):
     '''
     LoginScreen class is a tkinter GUI based frame that provides functionality for user login.
@@ -94,24 +100,25 @@ class LoginScreen(tk.Frame):
         self.controller = controller
         self.font = ('Courier', 20)
 
-        self.username_entry = ttk.Entry(self, font=self.font, background='#20C20E')
+        self.username_entry = customtkinter.CTkEntry(self, font=self.font, bg_color='#212121')
         self.username_entry.insert(0, 'Username')
         self.username_entry.bind('<FocusIn>', self.clear_username)
         self.username_entry.grid(row=0, column=0, padx=10, pady=10)
 
-        self.password_entry = ttk.Entry(self, font=self.font, show='*', background='#20C20E')
+        self.password_entry = customtkinter.CTkEntry(self, font=self.font, show='*', bg_color='#212121')
         self.password_entry.insert(0, 'Password')
         self.password_entry.bind('<FocusIn>', self.clear_password)
         self.password_entry.grid(row=1, column=0, padx=10, pady=10)
 
-        login_button = ttk.Button(self, text='Login', command=self.login)
-        login_button.grid(row=2, column=0, padx=5, pady=10, sticky='w')
-        register_button = ttk.Button(
+        login_button = customtkinter.CTkButton(self, text='Login', command=self.login, fg_color='#171717')
+        login_button.grid(row=2, column=0, padx=5, pady=10)
+        register_button = customtkinter.CTkButton(
             self,
             text='Register',
             command=lambda: self.controller.show_frame(RegisterScreen),
+            fg_color='#171717'
         )
-        register_button.grid(row=2, column=0, padx=5, pady=10, sticky='e')
+        register_button.grid(row=2, column=1, padx=5, pady=10, sticky='e')
 
     def login(self):
         logging.debug('Starting the login process')
@@ -178,7 +185,7 @@ class LoginScreen(tk.Frame):
         self.password_entry.delete(0, tk.END)
         self.password_entry.insert(0, 'Password')
 
-
+# change the code to a modern GUI using the module 'customtkinter'
 class RegisterScreen(tk.Frame):
     '''
     RegisterScreen class is a tkinter GUI based frame that provides functionality for user registration.
@@ -199,26 +206,27 @@ class RegisterScreen(tk.Frame):
     '''
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, background='#212121')
         self.controller = controller
         self.font = ('Courier', 20)
 
-        self.username_entry = ttk.Entry(self, font=self.font, background='#212121')
+        self.username_entry = customtkinter.CTkEntry(self, font=self.font, bg_color='#212121')
         self.username_entry.insert(0, 'Username')
         self.username_entry.bind('<FocusIn>', self.clear_username)
         self.username_entry.grid(row=0, column=0, padx=10, pady=10)
 
-        self.password_entry = ttk.Entry(self, font=self.font, show='*', background='#212121')
+        self.password_entry = customtkinter.CTkEntry(self, font=self.font, show='*', bg_color='#212121')
         self.password_entry.insert(0, 'Password')
         self.password_entry.bind('<FocusIn>', self.clear_password)
         self.password_entry.grid(row=1, column=0, padx=10, pady=10)
 
-        register_button = ttk.Button(self, text='Register', command=self.register)
-        register_button.grid(row=2, column=0, padx=10, pady=10, sticky='w')
-        back_button = ttk.Button(
-            self, text='Back', command=lambda: self.controller.show_frame(LoginScreen)
+        register_button = customtkinter.CTkButton(self, text='Register', command=self.register, fg_color='#171717')
+        register_button.grid(row=2, column=0, padx=10, pady=10)
+        back_button = customtkinter.CTkButton(
+            self, text='Back', command=lambda: self.controller.show_frame(LoginScreen),
+            fg_color='#171717'
         )
-        back_button.grid(row=2, column=0, padx=10, pady=10, sticky='e')
+        back_button.grid(row=2, column=1, padx=10, pady=10)
 
         self.winfo_toplevel().title('Login | Register')
         
