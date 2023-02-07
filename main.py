@@ -15,7 +15,6 @@ logging.basicConfig(
     filename='app.log', level=logging.DEBUG, format='%(asctime)s %(message)s'
 )
 
-#TRANSLATE INTO customtkinter
 class TopBar(tk.Frame):
     def __init__(self, master, *args, **kwargs):
         tk.Frame.__init__(self, master, *args, **kwargs)
@@ -35,7 +34,6 @@ class TopBar(tk.Frame):
     def pack(self, *args, **kwargs):
         tk.Frame.pack(self, *args, **kwargs)
 
-#TRANSLATE INTO customtkinter
 class MainApplication(tk.Tk):
     '''
     The MainApplication class is a Tkinter GUI based application that acts as a container for the login and register screens.
@@ -77,7 +75,6 @@ class MainApplication(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-# change the code to a modern GUI using the module 'customtkinter'
 class LoginScreen(tk.Frame):
     '''
     LoginScreen class is a tkinter GUI based frame that provides functionality for user login.
@@ -185,7 +182,6 @@ class LoginScreen(tk.Frame):
         self.password_entry.delete(0, tk.END)
         self.password_entry.insert(0, 'Password')
 
-# change the code to a modern GUI using the module 'customtkinter'
 class RegisterScreen(tk.Frame):
     '''
     RegisterScreen class is a tkinter GUI based frame that provides functionality for user registration.
@@ -257,9 +253,7 @@ class RegisterScreen(tk.Frame):
         self.username = self.username_entry.get()
         self.password = self.password_entry.get()
 
-        # Use bcrypt to hash the password before storing in the database
         hashed_password = bcrypt.hashpw(self.password.encode('utf-8'), bcrypt.gensalt())
-
         conn = sqlite3.connect('user_information.db')
         c = conn.cursor()
         c.execute('SELECT * FROM users WHERE username=?', (self.username,))
