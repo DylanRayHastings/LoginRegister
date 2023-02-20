@@ -1,19 +1,14 @@
 import tkinter as tk
-from tkinter import font
-import tkinter.ttk as ttk
 import customtkinter as ctk
 from tkinter import *
 from tkinter import messagebox
 import sqlite3
 import webbrowser
-import subprocess
-import time
 import bcrypt
 import logging
 import sys
 import traceback
 import math
-import random
 from PIL import Image, ImageTk
 
 #client = None  # Create a new client object that will be used to connect to the server.
