@@ -29,7 +29,7 @@ try:  # Try to import the socket module.
             super().__init__(master)
             # Set the radius and number of points to use for the sphere
             self.r = 125
-            self.num_points = 10
+            self.num_points = 30
 
             # Set the initial angle of rotation
             self.angle = 0
