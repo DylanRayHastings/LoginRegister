@@ -97,13 +97,20 @@ try:  # Try to import the socket module.
 
     class MainApplication(tk.Tk):
         '''
-        MainApplication class is the main tkinter GUI based application that holds all the different screens.
+        RotatingSphere is a tkinter canvas that displays a rotating sphere composed of points.
+
+        Attributes:
+        r (int): the radius of the sphere
+        num_points (int): the number of points to use for the sphere
+        angle (float): the angle of rotation
+        angle_x (float): the rotation angle around the x-axis
+        angle_y (float): the rotation angle around the y-axis
+        angle_z (float): the rotation angle around the z-axis
+        canvas (tk.Canvas): the tkinter canvas where the sphere is drawn
 
         Methods:
-        __init__: initializes the application and creates the different screens
-        show_frame: raises the requested frame to the top of the stack
-        go_to_login_screen: switches to the Login screen
-        go_to_register_screen: switches to the Register screen
+        __init__(self, master): Initializes the canvas and sets the attributes of the sphere.
+        update_sphere(self): Updates the position of the points on the sphere and rotates the sphere around x-, y-, and z-axes.
         '''
 
         def __init__(self, *args, **kwargs):
