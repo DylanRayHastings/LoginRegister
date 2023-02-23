@@ -235,37 +235,49 @@ try:  # Try to import the socket module.
             )
             register_button.grid(row=3, column=0, padx=0, pady=5)  # Pack the register button widget onto the LoginScreen object.
 
-        def login(self,):  # Define the login method that connects to the database, checks if the provided username and password match any existing user, and outputs the result.
-            logging.debug('Starting the login process') # Log the starting of the login process.
-            self.username = (self.username_entry.get()) # Get the username from the username entry widget.
-            self.password = (self.password_entry.get()) # Get the password from the password entry widget.
-            try:  # Try to connect to the database.
-                logging.debug('Connected to the database') # Log the connection to the database.
-                with sqlite3.connect('user_information.db') as conn:  
-                    cursor = conn.cursor()  # Create a new cursor object.
-                    query = 'SELECT password FROM users WHERE username = ?'  # Create a new query to get the password for the provided username.
-                    cursor.execute(query, (self.username,))  # Execute the query.
-                    row = cursor.fetchone()  # Get the first row from the result.
-                if (row): # If the row exists, set the stored_hash variable to the first element in the row.
-                    stored_hash = row[0] # Set the stored_hash variable to the first element in the row.  
-                else:  # If the row doesn't exist, set the stored_hash variable to None.
-                    messagebox.showerror('Error', 'Username not found')  # Show an error message.
-                    return  # Return from the method.
-                if stored_hash and bcrypt.checkpw(self.password.encode(), stored_hash): # If the stored_hash variable is not None and the provided password matches the stored password, show a success message and run the game.
-                    logging.debug(f'Provided password matches stored password: {bcrypt.checkpw(self.password.encode(), stored_hash)}') # Log the result of the password check.
-                    logging.debug(f'Login successful for {self.username}') # Log the successful login.
-                    messagebox.showinfo('Login', 'Login Successful') # Show a success message.
+        def login(self):
+            # Get the username and password from the input fields
+            username = self.username_entry.get()
+            password = self.password_entry.get()
+
+            # Connect to the database
+            with sqlite3.connect('user_information.db') as conn:
+                cursor = conn.cursor()
+
+                # Check if the 'salt' column already exists in the 'users' table
+                cursor.execute("PRAGMA table_info(users)")
+                columns = [column[1] for column in cursor.fetchall()]
+                if 'salt' not in columns:
+                    # Add the 'salt' column if it doesn't exist
+                    conn.execute("ALTER TABLE users ADD COLUMN salt TEXT;")
+                    conn.commit()
+
+                # Retrieve the stored password and salt for the specified username
+                query = 'SELECT password, salt FROM users WHERE username = ?'
+                cursor.execute(query, (username,))
+                row = cursor.fetchone()
+
+            # Check if the user exists
+            if row:
+                # Extract the stored password
+                stored_password = row[0]
+                salt = row[1]
+                
+                # Hash the provided password without salt
+                hashed_password = bcrypt.hashpw(password.encode(), salt)
+
+                # Check if the hashed password matches the stored password
+                if hashed_password == stored_password:
+                    messagebox.showinfo('Login', 'Login Successful')
                     webbrowser.open('https://www.youtube.com/watch?v=xvFZjo5PgG0&ab_channel=Duran')
-                else:  # If the provided password doesn't match the stored password, show an error message.
-                    messagebox.showerror('Login', 'Incorrect username or password') # Show an error message.
-                    logging.debug(f'Login failed for {self.username}') # Log the failed login.
-            except Exception as e:  # If an exception is raised, log the exception and show an error message.
-                logging.exception(e)  # Log the exception.
-                messagebox.showerror('Login', 'Login failed')  # Show an error message.
-            finally:  # Close the connection to the database.
-                conn.close()  # Close the connection to the database.
-                logging.debug('Connection to the database closed') # Log the closure of the connection to the database.
- 
+                else:
+                    messagebox.showerror('Login', 'Incorrect username or password')
+            else:
+                messagebox.showerror('Login', 'Username not found')
+
+            # Close the database connection
+            conn.close()
+
         def clear_username(self, event): # Define the clear_username method that clears the username entry widget if it contains the placeholder text.
             if (self.username_entry.get() == 'Username'): # If the username entry widget contains the placeholder text, clear it.
                 self.username_entry.delete(0, tk.END) # Clear the username entry widget. 
@@ -296,7 +308,7 @@ try:  # Try to import the socket module.
             self.password_entry.delete(0, tk.END)  # Clear the password entry widget.
             self.password_entry.insert(0, 'Password')  # Set the password entry widget to the placeholder text.
 
-    class RegisterScreen(tk.Frame):  # Define the RegisterScreen class that inherits from the tkinter Frame class.
+    class RegisterScreen(tk.Frame):
         '''
         RegisterScreen class is a tkinter GUI based frame that provides functionality for user registration.
 
@@ -314,48 +326,47 @@ try:  # Try to import the socket module.
         set_confirm_password: sets the placeholder text in the confirm password entry widget if it's empty
         '''
 
-        def __init__(self, parent):  # Define the __init__ method that initializes the frame and creates the necessary widgets for the register screen.
-            tk.Frame.__init__(self, parent, background='#212121', pady=100, padx=100)  # Initialize the frame.
+        def __init__(self, parent):
+            tk.Frame.__init__(self, parent, background='#212121', pady=100, padx=100)
             self.grid(row=0, column=0, sticky='w')
-    
-            
-            self.font = ('Courier', 20)  # Set the font for the widgets.
-            
+
+            self.font = ('Courier', 20)
+
             self.username_entry = ctk.CTkEntry(
-                self, 
-                font=self.font, 
+                self,
+                font=self.font,
                 justify="center",
                 bg_color='#212121',
                 fg_color='transparent',
                 border_width=0,
                 corner_radius=0
             )
-            self.username_entry.insert(0, 'Username')  # Set the username entry widget to the placeholder text.
-            self.username_entry.bind('<FocusIn>', self.clear_username)  # Bind the clear_username method to the <FocusIn> event.
-            self.username_entry.grid(row=0, column=0, padx=0, pady=5)  # Place the username entry widget in the frame.
+            self.username_entry.insert(0, 'Username')
+            self.username_entry.bind('<FocusIn>', self.clear_username)
+            self.username_entry.grid(row=0, column=0, padx=0, pady=5)
             self.password_entry = ctk.CTkEntry(
-                self, 
-                font=self.font, 
-                show='*', 
+                self,
+                font=self.font,
+                show='*',
                 justify="center",
                 bg_color='#212121',
                 fg_color='transparent',
                 border_width=0,
                 corner_radius=0
-            )  
-            self.password_entry.insert(0, 'Password')  # Set the password entry widget to the placeholder text.
-            self.password_entry.bind('<FocusIn>', self.clear_password)  # Bind the clear_password method to the <FocusIn> event.
-            self.password_entry.grid(row=1, column=0, padx=0, pady=10)  # Place the password entry widget in the frame.
+            )
+            self.password_entry.insert(0, 'Password')
+            self.password_entry.bind('<FocusIn>', self.clear_password)
+            self.password_entry.grid(row=1, column=0, padx=0, pady=10)
             register_button = ctk.CTkButton(
-                self, 
-                text='Register', 
-                command=self.register, 
+                self,
+                text='Register',
+                command=self.register,
                 fg_color='#171717',
                 hover_color='#404040',
                 corner_radius=0,
-            )  # Create the register button widget.
-            register_button.grid(row=2, column=0, padx=0, pady=5)  # Place the register button widget in the frame.
-            back_button = ctk.CTkButton(  # Create the back button widget.
+            )
+            register_button.grid(row=2, column=0, padx=0, pady=5)
+            back_button = ctk.CTkButton(
                 self,
                 text='Back',
                 command=lambda: app.show_frame(LoginScreen),
@@ -363,19 +374,19 @@ try:  # Try to import the socket module.
                 hover_color='#404040',
                 corner_radius=0,
             )
-            back_button.grid(row=3, column=0, padx=0, pady=5)  # Place the back button widget in the frame.
+            back_button.grid(row=3, column=0, padx=0, pady=5)
 
 
-        def clear_username(self, event):  # Define the clear_username method that clears the username entry widget if it contains the placeholder text.
-            if (self.username_entry.get() == 'Username'):  # If the username entry widget contains the placeholder text, clear it.
-                self.username_entry.delete(0, tk.END)  # Clear the username entry widget.
-            self.username_entry.unbind('<FocusOut>')  # Unbind the set_username method from the <FocusOut> event.
-            self.username_entry.bind('<FocusOut>', self.set_username)  # Bind the set_username method to the <FocusOut> event.
+        def clear_username(self, event):
+            if (self.username_entry.get() == 'Username'):
+                self.username_entry.delete(0, tk.END)
+            self.username_entry.unbind('<FocusOut>')
+            self.username_entry.bind('<FocusOut>', self.set_username)
 
-        def set_username(self, event):  # Define the set_username method that sets the username entry widget to the placeholder text if it is empty.
-            if (self.username_entry.get() == ''):  # If the username entry widget is empty, set it to the placeholder text.
-                self.username_entry.insert(0, 'Username')  # Set the username entry widget to the placeholder text.
-            self.username_entry.unbind('<FocusOut>')  # Unbind the set_username method from the <FocusOut> event.
+        def set_username(self, event):
+            if (self.username_entry.get() == ''):
+                self.username_entry.insert(0, 'Username')
+            self.username_entry.unbind('<FocusOut>')
 
         def clear_password(self, event):  # Define the clear_password method that clears the password entry widget if it contains the placeholder text.
             if (self.password_entry.get() == 'Password'):  # If the password entry widget contains the placeholder text, clear it.
@@ -391,7 +402,8 @@ try:  # Try to import the socket module.
         def register(self,):  # Define the register method that connects to the database, inserts the new user's information into the database, and outputs the result.
             self.username = (self.username_entry.get())  # Get the username from the username entry widget.
             self.password = (self.password_entry.get())  # Get the password from the password entry widget.
-            hashed_password = bcrypt.hashpw(self.password.encode('utf-8'), bcrypt.gensalt())  # Hash the password.
+            self.salt = bcrypt.gensalt(rounds=12)
+            hashed_password = bcrypt.hashpw(self.password.encode('utf-8'), self.salt)  # Hash the password.
             conn = sqlite3.connect('user_information.db')  # Connect to the database.
             c = conn.cursor()  # Create a cursor object.
             c.execute('SELECT * FROM users WHERE username=?', (self.username,))  # Execute a query to check if the username already exists.
@@ -400,7 +412,7 @@ try:  # Try to import the socket module.
                 messagebox.showerror('Error', 'Username already exists.')  # Output an error message.
                 logging.debug('Register Failed: Username already exists.')  # Log the error.
             else:  # If the username does not already exist, insert the new user's information into the database.
-                c.execute('INSERT INTO users VALUES (?,?)', (self.username, hashed_password))
+                c.execute('INSERT INTO users VALUES (?,?,?)', (self.username, hashed_password, self.salt))
                 conn.commit()  # Commit the changes to the database.
                 messagebox.showinfo('Success', 'User registered successfully.')  # Output a success message.
                 logging.debug('Register Success: User registered successfully.')  # Log the success.
