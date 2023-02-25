@@ -11,13 +11,28 @@ import traceback
 import math
 from PIL import Image, ImageTk
 
-#client = None  # Create a new client object that will be used to connect to the server.
+# TODO: Allow for connection to a live server. 
+# TODO: Make the 
+
+# /$$$$$$$            /$$                           /$$   /$$                       /$$     /$$                              
+#| $$__  $$          | $$                          | $$  | $$                      | $$    |__/                              
+#| $$  \ $$ /$$   /$$| $$  /$$$$$$  /$$$$$$$       | $$  | $$  /$$$$$$   /$$$$$$$ /$$$$$$   /$$ /$$$$$$$   /$$$$$$   /$$$$$$$
+#| $$  | $$| $$  | $$| $$ |____  $$| $$__  $$      | $$$$$$$$ |____  $$ /$$_____/|_  $$_/  | $$| $$__  $$ /$$__  $$ /$$_____/
+#| $$  | $$| $$  | $$| $$  /$$$$$$$| $$  \ $$      | $$__  $$  /$$$$$$$|  $$$$$$   | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+#| $$  | $$| $$  | $$| $$ /$$__  $$| $$  | $$      | $$  | $$ /$$__  $$ \____  $$  | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+#| $$$$$$$/|  $$$$$$$| $$|  $$$$$$$| $$  | $$      | $$  | $$|  $$$$$$$ /$$$$$$$/  |  $$$$/| $$| $$  | $$|  $$$$$$$ /$$$$$$$/
+#|_______/  \____  $$|__/ \_______/|__/  |__/      |__/  |__/ \_______/|_______/    \___/  |__/|__/  |__/ \____  $$|_______/ 
+#           /$$  | $$                                                                                     /$$  \ $$          
+#          |  $$$$$$/                                                                                    |  $$$$$$/          
+#           \______/                                                                                      \______/           
+
+ #client = None  # Create a new client object that will be used to connect to the server.
 #HOST_ADDR = 'localhost'  # Set the host address to localhost.
 #HOST_PORT = 8000  # Set the host port to 8000.
 
 try:  # Try to import the socket module.
     ctk.set_appearance_mode('Dark')  # Set the appearance mode to dark.
-    logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(message)s',)
+    logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(message)s',) # Set the logging level to debug.
     
     class RotatingSphere(tk.Canvas):
         '''
@@ -25,75 +40,66 @@ try:  # Try to import the socket module.
 
         Methods:
         __init__: initializes the application and creates the different screens'''
-        def __init__(self, master):
-            super().__init__(master)
+        def __init__(self, master): # Create a new instance of the RotatingSphere class.
+            super().__init__(master) # Call the parent class constructor.
             # Set the radius and number of points to use for the sphere
-            self.r = 125
-            self.num_points = 10
+            self.r = 125 # Radius of the sphere
+            self.num_points = 10 # Number of points to use for the sphere
 
-            # Set the initial angle of rotation
-            self.angle = 0
+            self.angle = 0 # Initial angle of rotation
 
-            # Set the rotation angles around the x-, y-, and z-axes
-            self.angle_x = 0.5
-            self.angle_y = 0.5
-            self.angle_z = 0.5
+            self.angle_x = 0.5 # Initial angle of rotation in the x direction
+            self.angle_y = 0.5 # Initial angle of rotation in the y direction
+            self.angle_z = 0.5 # Initial angle of rotation in the z direction
 
-            # Create the tkinter canvas
-            self.canvas = tk.Canvas(self, background='#212121', borderwidth=0, highlightthickness=0)
-            self.canvas.pack(fill=tk.BOTH, expand=True)
+            self.canvas = tk.Canvas(self, background='#212121', borderwidth=0, highlightthickness=0) # Create a new canvas object.
+            self.canvas.pack(fill=tk.BOTH, expand=True) # Pack the canvas object into the window.
 
-            # Start the update_sphere function
-            self.update_sphere()
+            self.update_sphere() # Update the sphere
 
         # Define a function to update the position of the points on the sphere
         def update_sphere(self):
-            # Increment the angles of rotation
-            self.angle += 0.05
-            self.angle_x += 0.03
-            self.angle_y += 0.01
-            self.angle_z += 0.02
+            self.angle += 0.05 # Increment the angle by 0.05 degrees each time the function is called.
+            self.angle_x += 0.03 # Increment the angle_x by 0.03 degrees each time the function is called.  
+            self.angle_y += 0.01 # Increment the angle_y by 0.01 degrees each time the function is called.
+            self.angle_z += 0.02 # Increment the angle_z by 0.02 degrees each time the function is called.
 
-            # Clear the canvas
-            self.canvas.delete('all')
+            self.canvas.delete('all') # Delete all the points from the canvas.
 
             # Loop over the angles u and v to create the points on the sphere
-            for u in range(0, self.num_points):
-                for v in range(0, self.num_points):
-                    x = self.r * math.sin(u * math.pi / self.num_points) * math.cos(2 * v * math.pi / self.num_points)
-                    y = self.r * math.sin(u * math.pi / self.num_points) * math.sin(2 * v * math.pi / self.num_points)
-                    z = self.r * math.cos(u * math.pi / self.num_points)
+            for u in range(0, self.num_points): # Loop over the number of points to create the points on the sphere
+                for v in range(0, self.num_points): # Loop over the number of points to create the points on the sphere
+                    x = self.r * math.sin(u * math.pi / self.num_points) * math.cos(2 * v * math.pi / self.num_points) # Calculate the x position of the point
+                    y = self.r * math.sin(u * math.pi / self.num_points) * math.sin(2 * v * math.pi / self.num_points) # Calculate the y position of the point
+                    z = self.r * math.cos(u * math.pi / self.num_points) # Calculate the z position of the point
 
                     # Rotate the points around the x-axis
-                    x_rot1 = x
-                    y_rot1 = y * math.cos(self.angle_x) - z * math.sin(self.angle_x)
-                    z_rot1 = y * math.sin(self.angle_x) + z * math.cos(self.angle_x)
+                    x_rot1 = x # Rotate the point around the x-axis
+                    y_rot1 = y * math.cos(self.angle_x) - z * math.sin(self.angle_x) # Rotate the point around the y-axis
+                    z_rot1 = y * math.sin(self.angle_x) + z * math.cos(self.angle_x) # Rotate the point around the z-axis
 
                     # Rotate the points around the y-axis
-                    x_rot2 = x_rot1 * math.cos(self.angle_y) + z_rot1 * math.sin(self.angle_y)
-                    y_rot2 = y_rot1
-                    z_rot2 = -x_rot1 * math.sin(self.angle_y) + z_rot1 * math.cos(self.angle_y)
+                    x_rot2 = x_rot1 * math.cos(self.angle_y) + z_rot1 * math.sin(self.angle_y) # Rotate the point around the x-axis
+                    y_rot2 = y_rot1 # Rotate the point around the y-axis
+                    z_rot2 = -x_rot1 * math.sin(self.angle_y) + z_rot1 * math.cos(self.angle_y) # Rotate the point around the z-axis
 
                     # Rotate the points around the z-axis
-                    x_rot3 = x_rot2 * math.cos(self.angle_z) - y_rot2 * math.sin(self.angle_z)
-                    y_rot3 = x_rot2 * math.sin(self.angle_z) + y_rot2 * math.cos(self.angle_z)
-                    z_rot3 = z_rot2
+                    x_rot3 = x_rot2 * math.cos(self.angle_z) - y_rot2 * math.sin(self.angle_z) # Rotate the point around the x-axis
+                    y_rot3 = x_rot2 * math.sin(self.angle_z) + y_rot2 * math.cos(self.angle_z) # Rotate the point around the y-axis
+                    z_rot3 = z_rot2 # Rotate the point around the z-axis
 
                     # Map the 3D points to 2D points on the canvas
-                    canvas_x = x_rot3 + 250
-                    canvas_y = 250 - y_rot3
+                    canvas_x = x_rot3 + 250 # Add 250 to the x position of the point on the canvas
+                    canvas_y = 250 - y_rot3 # Add 250 to the y position of the point on the canvas
 
-                    # Determine the color of the point based on the value of u and v
-                    if ((u + v) // 5) % 2 == 0:
-                        point_color = 'white'
-                    else:
-                        point_color = '#404040'
+                    if ((u + v) // 5) % 2 == 0: # Determine the color of the point based on the value of u and v
+                        point_color = 'white' # Set the color of the point to white
+                    else: 
+                        point_color = '#404040' # Set the color of the point to black
 
-                    # Draw the point on the canvas
-                    self.canvas.create_rectangle(canvas_x, canvas_y, canvas_x+1, canvas_y+1, fill=point_color, outline='')
+                    self.canvas.create_rectangle(canvas_x, canvas_y, canvas_x+1, canvas_y+1, fill=point_color, outline='') # Create a rectangle around the point on the canvas
 
-            # Schedule the update_sphere function to run again after a short delay
-            self.canvas.after(30, self.update_sphere)
+            self.canvas.after(30, self.update_sphere) # Call the update_sphere function every 30 milliseconds.
 
     class MainApplication(tk.Tk):
         '''
@@ -236,48 +242,39 @@ try:  # Try to import the socket module.
             register_button.grid(row=3, column=0, padx=0, pady=5)  # Pack the register button widget onto the LoginScreen object.
 
         def login(self):
-            # Get the username and password from the input fields
-            username = self.username_entry.get()
-            password = self.password_entry.get()
+            username = self.username_entry.get() # Get the username from the username entry widget.
+            password = self.password_entry.get() # Get the password from the password entry widget.
 
-            # Connect to the database
-            with sqlite3.connect('user_information.db') as conn:
-                cursor = conn.cursor()
+            with sqlite3.connect('user_information.db') as conn: # Connect to the database.
+                cursor = conn.cursor() # Create a new cursor for the database.
 
-                # Check if the 'salt' column already exists in the 'users' table
-                cursor.execute("PRAGMA table_info(users)")
-                columns = [column[1] for column in cursor.fetchall()]
-                if 'salt' not in columns:
-                    # Add the 'salt' column if it doesn't exist
-                    conn.execute("ALTER TABLE users ADD COLUMN salt TEXT;")
-                    conn.commit()
+                cursor.execute("PRAGMA table_info(users)") # Check if the users table exists.
+                columns = [column[1] for column in cursor.fetchall()] # Get the column names from the users table.
+                if 'salt' not in columns: # Check if the salt column exists.
+                    conn.execute("ALTER TABLE users ADD COLUMN salt TEXT;") # Add the salt column.
+                    conn.commit() # Commit the changes to the database.
 
-                # Retrieve the stored password and salt for the specified username
-                query = 'SELECT password, salt FROM users WHERE username = ?'
-                cursor.execute(query, (username,))
-                row = cursor.fetchone()
+                query = 'SELECT password, salt FROM users WHERE username = ?' # Create the query for the database.
+                cursor.execute(query, (username,)) # Execute the query.
+                row = cursor.fetchone() # Get the row from the database.
 
             # Check if the user exists
             if row:
-                # Extract the stored password
-                stored_password = row[0]
-                salt = row[1]
+                stored_password = row[0] # Get the stored password from the database.
+                salt = row[1] # Get the salt from the database.
                 
-                # Hash the provided password without salt
-                hashed_password = bcrypt.hashpw(password.encode(), salt)
+                hashed_password = bcrypt.hashpw(password.encode(), salt) # Hash the provided password without salt
 
-                # Check if the hashed password matches the stored password
-                if hashed_password == stored_password:
-                    messagebox.showinfo('Login', 'Login Successful')
+                if hashed_password == stored_password: # Check if the hashed password matches the stored password
+                    messagebox.showinfo('Login', 'Login Successful') # Show successful login message.
                     webbrowser.open('https://www.youtube.com/watch?v=xvFZjo5PgG0&ab_channel=Duran')
                 else:
-                    messagebox.showerror('Login', 'Incorrect username or password')
+                    messagebox.showerror('Login', 'Incorrect username or password') # Show unsuccessful login message (INCORRECT USERNAME / PASSWORD).
             else:
-                messagebox.showerror('Login', 'Username not found')
+                messagebox.showerror('Login', 'Username not found') # Show unsuccessful login message (USERNAME NOT FOUND).
 
-            # Close the database connection
-            conn.close()
-
+            conn.close() # Close the database connection.
+ 
         def clear_username(self, event): # Define the clear_username method that clears the username entry widget if it contains the placeholder text.
             if (self.username_entry.get() == 'Username'): # If the username entry widget contains the placeholder text, clear it.
                 self.username_entry.delete(0, tk.END) # Clear the username entry widget. 
@@ -327,66 +324,69 @@ try:  # Try to import the socket module.
         '''
 
         def __init__(self, parent):
-            tk.Frame.__init__(self, parent, background='#212121', pady=100, padx=100)
-            self.grid(row=0, column=0, sticky='w')
+            tk.Frame.__init__(self, parent, background='#212121', pady=100, padx=100) # Initialize the frame.
+            self.grid(row=0, column=0, sticky='w') # Create the grid for the frame.
 
-            self.font = ('Courier', 20)
+            self.font = ('Courier', 20) # Define the font for the labels.
 
-            self.username_entry = ctk.CTkEntry(
-                self,
-                font=self.font,
-                justify="center",
-                bg_color='#212121',
-                fg_color='transparent',
-                border_width=0,
-                corner_radius=0
+            self.username_entry = ctk.CTkEntry( # Create the username entry widget.
+                self, 
+                font=self.font, # Define the font for the username entry widget.
+                justify="center", # Set the text alignment for the username entry widget.
+                bg_color='#212121', # Set the background color for the username entry widget.
+                fg_color='transparent', # Set the foreground color for the username entry widget.
+                border_width=0, # Set the border width for the username entry widget.
+                corner_radius=0 # Set the corner radius for the username entry widget.
             )
-            self.username_entry.insert(0, 'Username')
-            self.username_entry.bind('<FocusIn>', self.clear_username)
-            self.username_entry.grid(row=0, column=0, padx=0, pady=5)
-            self.password_entry = ctk.CTkEntry(
-                self,
-                font=self.font,
-                show='*',
-                justify="center",
-                bg_color='#212121',
-                fg_color='transparent',
-                border_width=0,
-                corner_radius=0
-            )
-            self.password_entry.insert(0, 'Password')
-            self.password_entry.bind('<FocusIn>', self.clear_password)
-            self.password_entry.grid(row=1, column=0, padx=0, pady=10)
-            register_button = ctk.CTkButton(
-                self,
-                text='Register',
-                command=self.register,
-                fg_color='#171717',
-                hover_color='#404040',
-                corner_radius=0,
-            )
-            register_button.grid(row=2, column=0, padx=0, pady=5)
-            back_button = ctk.CTkButton(
-                self,
-                text='Back',
-                command=lambda: app.show_frame(LoginScreen),
-                fg_color='#171717',
-                hover_color='#404040',
-                corner_radius=0,
-            )
-            back_button.grid(row=3, column=0, padx=0, pady=5)
+            self.username_entry.insert(0, 'Username') # Set the username entry widget to the placeholder text.
+            self.username_entry.bind('<FocusIn>', self.clear_username) # Bind the clear_username method to the <FocusIn> event.
+            self.username_entry.grid(row=0, column=0, padx=0, pady=5) # Create the grid for the username entry widget.
 
+            self.password_entry = ctk.CTkEntry( # Create the password entry widget.
+                self,
+                font=self.font, # Define the font for the password entry widget.
+                show='*', # Set the password entry widget to show asterisks.
+                justify="center", # Set the text alignment for the password entry widget.
+                bg_color='#212121', # Set the background color for the password entry widget.
+                fg_color='transparent', # Set the foreground color for the password entry widget.
+                border_width=0, # Set the border width for the password entry widget.
+                corner_radius=0 # Set the corner radius for the password entry widget.
+            )
+            self.password_entry.insert(0, 'Password') # Set the password entry widget to the placeholder text.
+            self.password_entry.bind('<FocusIn>', self.clear_password) # Bind the clear_password method to the <FocusIn> event.
+            self.password_entry.grid(row=1, column=0, padx=0, pady=10) # Create the grid for the password entry widget.
 
-        def clear_username(self, event):
-            if (self.username_entry.get() == 'Username'):
-                self.username_entry.delete(0, tk.END)
-            self.username_entry.unbind('<FocusOut>')
-            self.username_entry.bind('<FocusOut>', self.set_username)
+            register_button = ctk.CTkButton( # Create the register button widget.
+                self,
+                text='Register', # Define the text for the register button widget.
+                command=self.register, # Define the command for the register button widget.
+                fg_color='#171717', # Set the foreground color for the register button widget.
+                hover_color='#404040', # Set the hover color for the register button widget.
+                corner_radius=0, # Set the corner radius for the register button widget.
+            )
+            register_button.grid(row=2, column=0, padx=0, pady=5) # Create the grid for the register button widget.
 
-        def set_username(self, event):
-            if (self.username_entry.get() == ''):
-                self.username_entry.insert(0, 'Username')
-            self.username_entry.unbind('<FocusOut>')
+            back_button = ctk.CTkButton( # Create the back button widget.
+                self, # Define the back button widget.
+                text='Back', # Define the text for the back button widget.
+                command=lambda: app.show_frame(LoginScreen), # Define the command for the back button widget.
+                fg_color='#171717', # Set the foreground color for the back button widget.
+                hover_color='#404040', # Set the hover color for the back button widget.
+                corner_radius=0, # Set the corner radius for the back button widget.
+            )
+            back_button.grid(row=3, column=0, padx=0, pady=5) # Create the grid for the back button widget.
+
+     
+        def clear_username(self, event): # Define the clear_username method.
+            if (self.username_entry.get() == 'Username'): # If the username entry widget contains the placeholder text.
+                self.username_entry.delete(0, tk.END) # Clear the username entry widget.
+            self.username_entry.unbind('<FocusOut>') # Unbind the clear_username method from the <FocusOut> event.
+            self.username_entry.bind('<FocusOut>', self.set_username) # Bind the set_username method to the <FocusOut> event.
+
+        def set_username(self, event): # Define the set_username method.
+            if (self.username_entry.get() == ''): # If the username entry widget is empty.
+                self.username_entry.insert(0, 'Username') # Set the username entry widget to the placeholder text.
+            self.username_entry.unbind('<FocusOut>') # Unbind the set_username method from the <FocusOut> event.
 
         def clear_password(self, event):  # Define the clear_password method that clears the password entry widget if it contains the placeholder text.
             if (self.password_entry.get() == 'Password'):  # If the password entry widget contains the placeholder text, clear it.
