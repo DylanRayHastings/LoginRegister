@@ -12,7 +12,6 @@ import math
 from PIL import Image, ImageTk
 
 # TODO: Allow for connection to a live server. 
-# TODO: Make the 
 
 # /$$$$$$$            /$$                           /$$   /$$                       /$$     /$$                              
 #| $$__  $$          | $$                          | $$  | $$                      | $$    |__/                              
